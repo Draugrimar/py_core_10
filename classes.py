@@ -1,20 +1,20 @@
 from collections import UserDict
 
-
+# Я так понимаю, пока что он нам не нужен.
 class Field:
     pass
 
-
+# Сложность +5
 class Name(Field):
     def __init__(self, name):
         self.value = name
 
-
+# Сложность +10
 class Phone(Field):
     def __init__(self, phone):
         self.value = phone
 
-
+# Основной рабочий класс.
 class Record(Name, Phone):
     def __init__(self, name):
         self.name = Name(name)
@@ -40,7 +40,7 @@ class Record(Name, Phone):
                 old_phones.append(self.new_phone)
         self.record = {self.name: old_phones}
 
-
+# Сложность +5
 class AddressBook(UserDict):
     data = {}
 
@@ -50,12 +50,3 @@ class AddressBook(UserDict):
 
     def show_all(self):
         print(self.data)
-
-
-def log():
-    result = f"{Field.name}\n{Field.phones}\n{Field.record}"
-    print(result)
-
-
-if __name__ == "__main__":
-    log()

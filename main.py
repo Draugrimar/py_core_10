@@ -74,7 +74,7 @@ def change(text):
     return "Completed!"
 
 
-# Достаём контак по имени
+# Достаём номер контакта по имени
 @input_error
 def phone(text):
     text = text.split(" ")
