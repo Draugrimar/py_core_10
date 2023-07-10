@@ -1,4 +1,4 @@
-from classes import Record, AddressBook
+from classes import Name, Phone, Record, AddressBook
 
 
 phone_book = AddressBook()
@@ -33,11 +33,11 @@ def parcer(text):
     if command in ["good bye", "close", "exit"]:
         return "Good bye!"
     if command == "add":
-        return add(f"{command} {line[1]} {line[2]}")
+        return add(line)
     if command == "change":
-        return change(f"{command} {line[1]} {line[2]} {line[3]}")
+        return change(line)
     if command == "phone":
-        return phone(f"phone {line[1]}")
+        return phone(line)
     if command == "show" and normalize(line[1]) == "all":
         return get_phone_book()
     else:
@@ -47,16 +47,23 @@ def parcer(text):
 # Добавление новых контактов
 @input_error
 def add(text):
-    text = text.split(" ")
-    if text[1] not in phone_book.keys():
-        name = text[1]
+    name = Name(text[1])
+    # Создание записи с именем без телфона
+    if len(text) == 2:
         text[1] = Record(name)
-        text[1].add_phone(text[2])
         phone_book.add_record(text[1])
     else:
-        temp_rec = phone_book[text[1]]
-        temp_rec.append_phone(temp_rec.phones, text[2])
-        phone_book.add_record(temp_rec)
+        phone = Phone(text[2])
+        # Создание записи с именем и телефоном
+        if text[1] not in phone_book.keys():
+            text[1] = Record(name)
+            text[1].add_phone(phone)
+            phone_book.add_record(text[1])
+        # Добавление телефона к уже существующей записи
+        if text[1] in phone_book.keys():
+            temp_rec = phone_book[text[1]]
+            temp_rec.append_phone(phone)
+            phone_book.add_record(temp_rec)
 
     return "Completed!"
 
@@ -64,12 +71,15 @@ def add(text):
 # Изменение существующих контактов
 @input_error
 def change(text):
-    text = text.split(" ")
     temp_rec = phone_book[text[1]]
-    if text[2] in temp_rec.phones:
-        temp_rec.change_phone(temp_rec.phones, text[2], text[3])
+    phones = []
+    for n in temp_rec.phones:
+        phones.append(n.value)
+    if text[2] in phones:
+        new_phone = Phone(text[3])
+        temp_rec.change_phone(temp_rec.phones, text[2], new_phone)
         phone_book.add_record(temp_rec)
-    if text[2] not in temp_rec.phones:
+    if text[2] not in phones:
         return "No such number in this record"
     return "Completed!"
 
@@ -77,7 +87,6 @@ def change(text):
 # Достаём номер контакта по имени
 @input_error
 def phone(text):
-    text = text.split(" ")
     list = phone_book.data[text[1]].phones
     phones = ""
     for x in list:
